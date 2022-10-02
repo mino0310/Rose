@@ -14,8 +14,7 @@ export default {
 
   },
   methods: {
-    firstClick: function () {
-
+    firstClick() {
       console.log('눌렀습니다');
       console.log('요청 보냅니다.');
       // this.$http.get('hello');
@@ -23,9 +22,9 @@ export default {
         method: 'get',
         params: {
           te: 'forTest',
-        }
+        },
       });
     },
-  }
+  },
 };
 </script>
