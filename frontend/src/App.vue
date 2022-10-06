@@ -4,7 +4,7 @@
     <v-main>
       <router-view/>
     </v-main>
-    <myFooter :icons="icons"/>
+    <myFooter/>
   </v-app>
 </template>
 
@@ -18,12 +18,7 @@ export default {
   components: {MyHeader, MyFooter},
   data() {
     return {
-      icons: [
-        {name: 'mdi-facebook', link: 'www.naver.com'},
-        {name: 'mdi-twitter', link: 'www.naver.com'},
-        // 'mdi-linkedin',
-        // 'mdi-instagram',
-      ]
+
     }
   }
 
