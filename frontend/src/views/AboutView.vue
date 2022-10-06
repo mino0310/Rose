@@ -1,7 +1,9 @@
 <template>
   <div class="about">
+
     <h1>This is an about page</h1>
     <button v-on:click="firstClick">TEST 요청</button>
+
   </div>
 </template>
 
@@ -26,5 +28,6 @@ export default {
       });
     },
   },
+
 };
 </script>

@@ -1,26 +1,31 @@
 <template>
   <v-app>
-    <v-app-bar
-      app
-      color="primary"
-      dark
-    >
-      MINO's Project
-      <v-spacer></v-spacer>
-    </v-app-bar>
+    <myHeader/>
     <v-main>
       <router-view/>
     </v-main>
+    <myFooter :icons="icons"/>
   </v-app>
 </template>
 
 <script>
 
+import MyFooter from "@/components/MyFooter";
+import MyHeader from "@/components/MyHeader";
+
 export default {
   name: 'App',
+  components: {MyHeader, MyFooter},
+  data() {
+    return {
+      icons: [
+        {name: 'mdi-facebook', link: 'www.naver.com'},
+        {name: 'mdi-twitter', link: 'www.naver.com'},
+        // 'mdi-linkedin',
+        // 'mdi-instagram',
+      ]
+    }
+  }
 
-  data: () => ({
-    //
-  }),
 };
 </script>
