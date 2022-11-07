@@ -5,7 +5,7 @@ Project's name is not determined yet.
 
 
 ## Frontend
-### Vue js 2
+### Vue js 3
 
 ## Backend
 ### Spring Boot
