@@ -1,11 +1,13 @@
 package com.example.myfirstmac.service;
 
 import com.example.myfirstmac.domain.user.User;
+import com.example.myfirstmac.exception.UserNotFound;
 import com.example.myfirstmac.repository.UserRepository;
 import com.example.myfirstmac.request.UserCreate;
 import com.example.myfirstmac.request.UserEdit;
 import com.example.myfirstmac.request.UserSearch;
 import com.example.myfirstmac.response.UserResponse;
+import com.mysema.commons.lang.Assert;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -172,6 +174,7 @@ class UserServiceTest {
 
         assertEquals("seoul", changedUser.getAddress());
     }
+
     @Test
     @DisplayName("유저 삭제")
     void test6() {
@@ -192,4 +195,61 @@ class UserServiceTest {
     }
 
 
+    @Test
+    @DisplayName("회원 1개 조회 - 존재하지 않는 회원 ")
+    void test7() {
+
+        // give
+        User user = User.builder().userId("bewriter310").name("김민호").address("전농동").build();
+
+//        Long id = userService.create(user);
+        userRepository.save(user);
+
+        // expected
+//        UserResponse response = userService.getUser(user.getId() + 1L);
+
+        UserNotFound e = assertThrows(UserNotFound.class, () -> {
+            userService.getUser(user.getId() + 1L);
+        });
+    }
+
+    @Test
+    @DisplayName("회원 삭제 - 존재하지 않는 회원")
+    void test8() {
+
+        // given
+        User user = User.builder().userId("testId")
+                .name("testName")
+                .address("testAdd")
+                .build();
+        userRepository.save(user);
+
+        // expected
+        assertThrows(UserNotFound.class, () -> {
+            userService.delete(user.getId() + 1);
+        });
+
+    }
+
+    @Test
+    @DisplayName("유저 주소 수정 - 존재하지 않는 회원")
+    void test9() {
+
+        // given
+        User user = User.builder().userId("testId")
+                .name("testName")
+                .address("testAdd")
+                .build();
+        userRepository.save(user);
+
+        UserEdit userEdit = UserEdit.builder()
+                .name("testName")
+                .address("seoul")
+                .build();
+
+        // expected
+        assertThrows(UserNotFound.class, () -> {
+            userService.edit(user.getId() + 1, userEdit);
+        });
+    }
 }

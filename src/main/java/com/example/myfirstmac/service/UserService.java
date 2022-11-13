@@ -3,6 +3,7 @@ package com.example.myfirstmac.service;
 
 import com.example.myfirstmac.domain.user.User;
 import com.example.myfirstmac.domain.user.UserEditor;
+import com.example.myfirstmac.exception.UserNotFound;
 import com.example.myfirstmac.repository.UserRepository;
 import com.example.myfirstmac.request.UserCreate;
 import com.example.myfirstmac.request.UserEdit;
@@ -46,16 +47,12 @@ public class UserService {
 
     public UserResponse getUser(Long id) {
 
-        System.out.println("id = " + id);
-        System.out.println("now repo count = " + userRepository.count());
-        User test = userRepository.findAll().get(0);
-        System.out.println("repo print!");
-        System.out.println(test.getId());
-        System.out.println(test.getUserId());
-        System.out.println(test.getName());
+        // Java 에서 제공해주는 예외는 구현하고자 하는 비즈니스 로직의 예외를 정확히 표현해주지 못한다. 따라서 구체적인 예외를 생성해줄 필요가 있다.
+//        User user = userRepository.findById(id)
+//                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
 
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다"));
+                .orElseThrow(UserNotFound::new);
 
         UserResponse userResponse = UserResponse.builder().id(user.getId()).name(user.getName()).userId(user.getUserId()).address(user.getAddress()).build();
         return userResponse;
@@ -79,7 +76,7 @@ public class UserService {
     @Transactional
     public void edit(Long id, UserEdit userEdit) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(UserNotFound::new);
 
         // 수정 시에 Setter 를 사용하는 것은 부적합. 추적이 어려워 디버깅이 어렵다.
 //        user.setName(userEdit.getName());
@@ -99,7 +96,7 @@ public class UserService {
 
     public void delete(Long id) {
         User user = userRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+                .orElseThrow(UserNotFound::new);
 
         userRepository.delete(user);
     }
