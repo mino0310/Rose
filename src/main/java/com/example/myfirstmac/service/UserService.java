@@ -2,8 +2,10 @@ package com.example.myfirstmac.service;
 
 
 import com.example.myfirstmac.domain.user.User;
+import com.example.myfirstmac.domain.user.UserEditor;
 import com.example.myfirstmac.repository.UserRepository;
 import com.example.myfirstmac.request.UserCreate;
+import com.example.myfirstmac.request.UserEdit;
 import com.example.myfirstmac.request.UserSearch;
 import com.example.myfirstmac.response.UserResponse;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +14,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,5 +72,35 @@ public class UserService {
         return userRepository.getList(userSearch).stream()
                 .map(UserResponse::new)
                 .collect(Collectors.toList());
+    }
+
+
+    // @Transactional 을 붙이면 종료와 동시에 commit 을 치면서 update문을 날려버린다.
+    @Transactional
+    public void edit(Long id, UserEdit userEdit) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        // 수정 시에 Setter 를 사용하는 것은 부적합. 추적이 어려워 디버깅이 어렵다.
+//        user.setName(userEdit.getName());
+//        user.setAddress(userEdit.getAddress());
+
+        UserEditor.UserEditorBuilder userEditorBuilder = user.toEditor();
+
+        UserEditor userEditor = userEditorBuilder
+                .name(userEdit.getName() != null ? userEdit.getName() : user.getName())
+                .address(userEdit.getAddress() != null ? userEdit.getAddress() : user.getAddress())
+                .build();
+
+
+        user.edit(userEditor);
+
+    }
+
+    public void delete(Long id) {
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 회원입니다."));
+
+        userRepository.delete(user);
     }
 }

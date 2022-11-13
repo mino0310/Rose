@@ -3,6 +3,7 @@ package com.example.myfirstmac.service;
 import com.example.myfirstmac.domain.user.User;
 import com.example.myfirstmac.repository.UserRepository;
 import com.example.myfirstmac.request.UserCreate;
+import com.example.myfirstmac.request.UserEdit;
 import com.example.myfirstmac.request.UserSearch;
 import com.example.myfirstmac.response.UserResponse;
 import org.junit.jupiter.api.Assertions;
@@ -113,9 +114,81 @@ class UserServiceTest {
 
         // then
         assertEquals(10L, users.size());
-        assertEquals("testId9", users.get(0).getUserId());
-        assertEquals("testName9", users.get(0).getName());
-        assertEquals("testAdd9", users.get(0).getAddress());
+        assertEquals("testId29", users.get(0).getUserId());
+        assertEquals("testName29", users.get(0).getName());
+        assertEquals("testAdd29", users.get(0).getAddress());
+    }
+
+    // 새로운 기능을 만들 땐 테스트부터 작성해야 한다.
+    @Test
+    @DisplayName("유저 이름 수정")
+    void test4() {
+
+        // given
+        User user = User.builder().userId("testId")
+                .name("testName")
+                .address("testAdd")
+                .build();
+        userRepository.save(user);
+
+        UserEdit userEdit = UserEdit.builder()
+                .name("mino")
+                .address("testAdd")
+                .build();
+
+        // when
+        userService.edit(user.getId(), userEdit);
+
+        // then
+        User changedUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다. id = " + user.getId()));
+
+        assertEquals("mino", changedUser.getName());
+        assertEquals("testAdd", changedUser.getAddress());
+    }
+
+    @Test
+    @DisplayName("유저 주소 수정")
+    void test5() {
+
+        // given
+        User user = User.builder().userId("testId")
+                .name("testName")
+                .address("testAdd")
+                .build();
+        userRepository.save(user);
+
+        UserEdit userEdit = UserEdit.builder()
+                .name("testName")
+                .address("seoul")
+                .build();
+
+        // when
+        userService.edit(user.getId(), userEdit);
+
+        // then
+        User changedUser = userRepository.findById(user.getId())
+                .orElseThrow(() -> new RuntimeException("회원이 존재하지 않습니다. id = " + user.getId()));
+
+        assertEquals("seoul", changedUser.getAddress());
+    }
+    @Test
+    @DisplayName("유저 삭제")
+    void test6() {
+
+        // given
+        User user = User.builder().userId("testId")
+                .name("testName")
+                .address("testAdd")
+                .build();
+        userRepository.save(user);
+
+        // when
+        userService.delete(user.getId());
+
+        // then
+
+        assertEquals(0L, userRepository.count());
     }
 
 

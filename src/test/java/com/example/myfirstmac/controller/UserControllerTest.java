@@ -3,6 +3,7 @@ package com.example.myfirstmac.controller;
 import com.example.myfirstmac.domain.user.User;
 import com.example.myfirstmac.repository.UserRepository;
 import com.example.myfirstmac.request.UserCreate;
+import com.example.myfirstmac.request.UserEdit;
 import com.example.myfirstmac.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -29,8 +30,7 @@ import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -190,9 +190,9 @@ class UserControllerTest {
                 )
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.length()").value(10))
-                .andExpect(jsonPath("$[0].userId").value("testId9"))
-                .andExpect(jsonPath("$[0].name").value("testName9"))
-                .andExpect(jsonPath("$[0].address").value("testAdd9"))
+                .andExpect(jsonPath("$[0].userId").value("testId29"))
+                .andExpect(jsonPath("$[0].name").value("testName29"))
+                .andExpect(jsonPath("$[0].address").value("testAdd29"))
                 .andDo(print()); // 요청에 대한 정보를 출력한다.
         // when
         // then
@@ -231,6 +231,53 @@ class UserControllerTest {
                 .andDo(print()); // 요청에 대한 정보를 출력한다.
         // when
         // then
+    }
+
+    @Test
+    @DisplayName("회원 이름 수정")
+    void test7() throws Exception {
+
+        // given
+        User user = User.builder().userId("testId")
+                .name("testName")
+                .address("testAdd")
+                .build();
+        userRepository.save(user);
+
+        UserEdit userEdit = UserEdit.builder()
+                .name("mino")
+                .address("testAdd")
+                .build();
+
+        // expected
+        mockMvc.perform(
+                        patch("/users/{userId}", user.getId())
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(userEdit))
+                )
+                .andExpect(status().isOk())
+                .andDo(print()); // 요청에 대한 정보를 출력한다.
+    }
+
+
+    @Test
+    @DisplayName("회원 삭제")
+    void test8() throws Exception {
+
+        // given
+        User user = User.builder().userId("testId")
+                .name("testName")
+                .address("testAdd")
+                .build();
+        userRepository.save(user);
+
+        // expected
+        mockMvc.perform(
+                        delete("/users/{userId}", user.getId())
+                                .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andDo(print()); // 요청에 대한 정보를 출력한다.
     }
 
     @AfterEach
