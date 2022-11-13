@@ -27,4 +27,18 @@ public class User {
         this.name = name;
         this.address = address;
     }
+
+    public UserEditor.UserEditorBuilder toEditor(){
+        return UserEditor.builder()
+                .name(name)
+                .address(address);
+    }
+
+    /**
+     * @param userEditor Build된 userEditor가 넘어온다.
+     */
+    public void edit(UserEditor userEditor) {
+        name = userEditor.getName();
+        address = userEditor.getAddress();
+    }
 }

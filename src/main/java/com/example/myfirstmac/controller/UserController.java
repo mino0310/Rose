@@ -2,6 +2,7 @@ package com.example.myfirstmac.controller;
 
 import com.example.myfirstmac.domain.user.User;
 import com.example.myfirstmac.request.UserCreate;
+import com.example.myfirstmac.request.UserEdit;
 import com.example.myfirstmac.request.UserSearch;
 import com.example.myfirstmac.response.UserResponse;
 import com.example.myfirstmac.service.UserService;
@@ -42,16 +43,25 @@ public class UserController {
     }
 
 
-
     // 컨트롤러에서 받은 페이징 관련 값을 Pageable 로 받아도 되나 이거는 페이지관련 정보만 받게 된다.
     // 추후 소팅 기타 등등의 정보를 받아야 할 수 있으므로 별도의 클래스를 생성해서 정보를 저장해서 사용하는 것이 좋다.
 
     @GetMapping("/users")
-    public List<UserResponse> getUserList(@ModelAttribute UserSearch userSearch){
+    public List<UserResponse> getUserList(@ModelAttribute UserSearch userSearch) {
         // page 값을 직접 받아서 Service로 넘기면 spring.data.web.pageable.one-indexed-parameters=true 옵션이 동작하지 않음.
         // @PageableDefault 어노테이션을 사용해 기본값을 적용시켜버릴 수도 있음.
         // 직접 입력을 받으려면 해당 어노테이션을 제거해야 한다.
 
         return userService.getList(userSearch);
+    }
+
+    @PatchMapping("/users/{userId}")
+    public void editUser(@PathVariable("userId") Long id, @RequestBody @Valid UserEdit request) {
+        userService.edit(id, request);
+    }
+
+    @DeleteMapping("/users/{userId}")
+    public void delete(@PathVariable("userId") Long id) {
+        userService.delete(id);
     }
 }
