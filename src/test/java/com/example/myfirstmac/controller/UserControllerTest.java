@@ -6,6 +6,7 @@ import com.example.myfirstmac.request.UserCreate;
 import com.example.myfirstmac.service.UserService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +20,12 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.regex.Matcher;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -152,12 +159,77 @@ class UserControllerTest {
                 .andExpect(jsonPath("$.name").value(user.getName()))
                 .andExpect(jsonPath("$.address").value(user.getAddress()))
                 .andDo(print()); // 요청에 대한 정보를 출력한다.
-
-
         // when
+        // then
+    }
+
+    @Test
+    @DisplayName("유저 여러개 조회")
+    void test5() throws Exception {
+
+        // given
+        List<User> users = IntStream.range(0, 30)
+                .mapToObj(i -> User.builder()
+                        .userId("testId" + i)
+                        .name("testName" + i)
+                        .address("testAdd" + i)
+                        .build()
+                )
+                .collect(Collectors.toList());
+
+        userRepository.saveAll(users);
 
 
 
+        // Service 에서는 pageable 객체를 만들면서 페이징에 대한 정보를 넘겼으나
+        // Controller 는 HTTP 통신이나 웹 관련 처리만 하므로 이를 통해 페이지에 대한 정보를 넘겨줘야 한다.
+        // 프론트 쪽에서 10개, 20개, 50개 보기등의 기능이 필요로 하면 파라미터로 넘겨서 처리해줘도 좋으나 보통은 서버 측에서 내려주는 대로 뿌리는 경우가 많다.
+        mockMvc.perform(
+                        get("/users?page=1&size=10")
+                                .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(10))
+                .andExpect(jsonPath("$[0].userId").value("testId9"))
+                .andExpect(jsonPath("$[0].name").value("testName9"))
+                .andExpect(jsonPath("$[0].address").value("testAdd9"))
+                .andDo(print()); // 요청에 대한 정보를 출력한다.
+        // when
+        // then
+    }
+
+    @Test
+    @DisplayName("페이지를 0으로 요청하면 첫 페이지를 가져온다.")
+    void test6() throws Exception {
+
+        // given
+        List<User> users = IntStream.range(0, 30)
+                .mapToObj(i -> User.builder()
+                        .userId("testId" + i)
+                        .name("testName" + i)
+                        .address("testAdd" + i)
+                        .build()
+                )
+                .collect(Collectors.toList());
+
+        userRepository.saveAll(users);
+
+
+
+        // Service 에서는 pageable 객체를 만들면서 페이징에 대한 정보를 넘겼으나
+        // Controller 는 HTTP 통신이나 웹 관련 처리만 하므로 이를 통해 페이지에 대한 정보를 넘겨줘야 한다.
+        // 프론트 쪽에서 10개, 20개, 50개 보기등의 기능이 필요로 하면 파라미터로 넘겨서 처리해줘도 좋으나 보통은 서버 측에서 내려주는 대로 뿌리는 경우가 많다.
+        mockMvc.perform(
+                        get("/users?page=1&size=10")
+                                .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(10))
+                .andExpect(jsonPath("$[0].userId").value("testId29"))
+                .andExpect(jsonPath("$[0].name").value("testName29"))
+                .andExpect(jsonPath("$[0].address").value("testAdd29"))
+                .andDo(print()); // 요청에 대한 정보를 출력한다.
+        // when
         // then
     }
 
