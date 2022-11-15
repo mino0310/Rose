@@ -1,6 +1,7 @@
 package com.example.myfirstmac.controller;
 
 import com.example.myfirstmac.domain.user.User;
+import com.example.myfirstmac.exception.InvalidRequest;
 import com.example.myfirstmac.repository.UserRepository;
 import com.example.myfirstmac.request.UserCreate;
 import com.example.myfirstmac.request.UserEdit;
@@ -151,7 +152,7 @@ class UserControllerTest {
         String json = objectMapper.writeValueAsString(user);
 
         mockMvc.perform(
-                        get("/user/{userId}", user.getId())
+                        get("/users/{userId}", user.getId())
                                 .contentType(APPLICATION_JSON)
                 )
                 .andExpect(status().isOk())
@@ -279,6 +280,69 @@ class UserControllerTest {
                 .andExpect(status().isOk())
                 .andDo(print()); // 요청에 대한 정보를 출력한다.
     }
+
+    @Test
+    @DisplayName("존재하지 않는 회원 조회")
+    void test9() throws Exception {
+
+        mockMvc.perform(
+                        delete("/users/{userId}", 1L)
+                                .contentType(APPLICATION_JSON)
+                )
+                .andExpect(status().isNotFound())
+                .andDo(print()); // 요청에 대한 정보를 출력한다.
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 회원 수정")
+    void test10() throws Exception {
+
+        User user = User.builder().userId("testId")
+                .name("testName")
+                .address("testAdd")
+                .build();
+        userRepository.save(user);
+
+        UserEdit userEdit = UserEdit.builder()
+                .name("mino")
+                .address("testAdd")
+                .build();
+
+        mockMvc.perform(
+                        patch("/users/{userId}", user.getId() + 1)
+                                .contentType(APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(userEdit))
+                )
+                .andExpect(status().isNotFound())
+                .andDo(print()); // 요청에 대한 정보를
+    }
+
+    @Test
+    @DisplayName("회원 생성 시 이름에 '욕설'이 들어갈 수는 없다.")
+    void test11() throws Exception {
+
+        //given
+        UserCreate userCreate = UserCreate.builder()
+                .userId("bewriter310")
+                .name("김민욕설호")
+                .address("전농동")
+                .build();
+
+        String json = objectMapper.writeValueAsString(userCreate);
+
+        //when
+        mockMvc.perform(
+                        post("/createUser")
+                                .contentType(APPLICATION_JSON)
+                                .content(json)
+                )
+                .andExpect(status().isBadRequest())
+                .andDo(print()); // 요청에 대한 정보를 출력한다.
+
+        //then
+
+    }
+
 
     @AfterEach
     void cleanData() {

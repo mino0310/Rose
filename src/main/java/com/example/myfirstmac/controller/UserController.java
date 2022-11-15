@@ -1,6 +1,7 @@
 package com.example.myfirstmac.controller;
 
 import com.example.myfirstmac.domain.user.User;
+import com.example.myfirstmac.exception.InvalidRequest;
 import com.example.myfirstmac.request.UserCreate;
 import com.example.myfirstmac.request.UserEdit;
 import com.example.myfirstmac.request.UserSearch;
@@ -24,6 +25,10 @@ public class UserController {
 
     @PostMapping("/createUser")
     public void createUser(@RequestBody @Valid UserCreate request) throws Exception {
+
+        if (request.getName().contains("욕설")) {
+            throw new InvalidRequest();
+        }
         userService.create(request);
         // post 요청 시엔 별다른 응답을 내려주지 않는다.
         // TEST 시에는 빈 값으로 처리해야 함.
@@ -36,7 +41,7 @@ public class UserController {
 //        return Map.of("userId", userId);
     }
 
-    @GetMapping("/user/{userId}")
+    @GetMapping("/users/{userId}")
     public UserResponse getUser(@PathVariable(name = "userId") Long id) {
         return userService.getUser(id);
 

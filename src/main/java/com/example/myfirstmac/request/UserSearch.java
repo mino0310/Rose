@@ -27,6 +27,6 @@ public class UserSearch {
     // 페이지와 사이즈를 지정해주는 것은 컨트롤러 단에서 일일이 계산하는 것보다 별도 처리를 담당하는 클래스의 별도의 메서드로 하는 것이 좋다.
     // 그런 식으로 추상화를 시켜둬야 안에서 로직이 바뀌더라도 의존없이 처리할 수 있다.
     public long getOffset(){
-        return ((long) max(MIN_PAGE, page) - 1) * min(size, MAX_SIZE);
+        return ((long) max(MIN_PAGE, page == null ? 1 : page) - 1) * min(size == null ? 1 : size, MAX_SIZE);
     }
 }

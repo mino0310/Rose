@@ -1,5 +1,6 @@
 package com.example.myfirstmac.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -22,6 +23,9 @@ import java.util.Map;
 
 @Getter
 @Setter
+// 빈 값은 반환하지 않게 해주는 어노테이션
+// 그러나 비어있는 것은 그것대로 중요한 정보가 될 수 있으므로 권장하지는 않음.
+//@JsonInclude(value = JsonInclude.Include.NON_EMPTY)
 public class ErrorResponse {
     // 회사마다 팀마다 에러 클래스 정의가 다름
 

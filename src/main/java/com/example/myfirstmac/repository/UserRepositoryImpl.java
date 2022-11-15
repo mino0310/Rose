@@ -23,7 +23,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom{
 
 
         return jpaQueryFactory.selectFrom(user)
-                .limit(userSearch.getSize())
+                .limit(userSearch.getSize() == null ? 1 : userSearch.getSize())
                 .offset(userSearch.getOffset())
                 .orderBy(user.id.desc()) // pk 값으로 Order by
                 .fetch();
