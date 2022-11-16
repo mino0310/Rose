@@ -33,12 +33,13 @@ public class ErrorResponse {
     private final String message;
 
     // 초기값이 있으므로 롬복이 생성해주지 않음.
-    private final Map<String, String> validation = new HashMap<>();
+    private final Map<String, String> validation;
 
     @Builder
-    public ErrorResponse(String code, String message) {
+    public ErrorResponse(String code, String message, Map<String, String> validation) {
         this.code = code;
         this.message = message;
+        this.validation = validation;
     }
 
     public void addValidation(String field, String defaultMessage) {

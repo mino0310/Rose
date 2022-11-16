@@ -26,9 +26,15 @@ public class UserController {
     @PostMapping("/createUser")
     public void createUser(@RequestBody @Valid UserCreate request) throws Exception {
 
-        if (request.getName().contains("욕설")) {
-            throw new InvalidRequest();
-        }
+
+        // 이렇게 값을 직접 꺼내와서 예외를 던지는 것은 좋지 않다. 메시지를 다루는 형식으로 바꿔야한다.
+//        if (request.getName().contains("욕설")) {
+//            throw new InvalidRequest();
+//        }
+
+        // 이와 같이 메시지를 명확히 해주면 유지보수 측면과 가독성 측면에서 좋다.
+        request.validate();
+
         userService.create(request);
         // post 요청 시엔 별다른 응답을 내려주지 않는다.
         // TEST 시에는 빈 값으로 처리해야 함.

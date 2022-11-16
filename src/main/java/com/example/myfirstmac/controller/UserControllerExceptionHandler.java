@@ -1,6 +1,7 @@
 package com.example.myfirstmac.controller;
 
 
+import com.example.myfirstmac.exception.InvalidRequest;
 import com.example.myfirstmac.exception.UserException;
 import com.example.myfirstmac.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,9 @@ import java.util.List;
 @Slf4j
 @RestControllerAdvice
 public class UserControllerExceptionHandler {
+
+    // MethodArgumentNotValidException 처럼 스프링에서 제공해주는 예외는 따로 등록해두는 것이 좋다
+    // 비즈니스 관련된 것도 최상위 비즈니스 로직과 관련된 예외를 등록해놓는 것이 좋다.
 
     @ResponseBody
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -44,8 +48,19 @@ public class UserControllerExceptionHandler {
 
         ErrorResponse body = ErrorResponse.builder()
                 .code(String.valueOf(statusCode))
+                .validation(e.getValidation())
                 .message(e.getMessage())
                 .build();
+
+        // 많은 예외를 다음처럼 하나씩 처리하는 건 비효율적이다.
+//        if (e instanceof UserException) {
+//            // 에외를 꺼내야 한다.
+//            InvalidRequest invalidRequest = (InvalidRequest) e;
+//            String fieldName = invalidRequest.getFieldName();
+//            String message = invalidRequest.getMessage();
+//
+//            body.addValidation(fieldName, message);
+//        }
 
         ResponseEntity<ErrorResponse> response = ResponseEntity.status(statusCode)
                 .body(body);

@@ -1,6 +1,7 @@
 package com.example.myfirstmac.request;
 
 
+import com.example.myfirstmac.exception.InvalidRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -28,6 +29,12 @@ public class UserCreate {
         this.userId = userId;
         this.name = name;
         this.address = address;
+    }
+
+    public void validate() {
+        if (name.contains("욕설")) {
+            throw new InvalidRequest("name", "이름에 욕설을 포함할 수 없습니다.");
+        }
     }
 
     // Builder 의 장점
