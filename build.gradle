@@ -1,7 +1,7 @@
 plugins {
     id 'org.springframework.boot' version '2.7.3'
     id 'io.spring.dependency-management' version '1.0.13.RELEASE'
-    id 'org.asciidoctor.convert' version '1.5.8'
+    id "org.asciidoctor.jvm.convert" version "3.3.2"
     id 'java'
 }
 
@@ -13,6 +13,7 @@ configurations {
     compileOnly {
         extendsFrom annotationProcessor
     }
+    asciidoctorExt
 }
 
 repositories {
@@ -21,6 +22,8 @@ repositories {
 
 ext {
     set('snippetsDir', file("build/generated-snippets"))
+    snippetsDir = file('build/generated-snippets')
+    projectVersion = '2.0.6.RELEASE'
 }
 
 dependencies {
@@ -34,7 +37,8 @@ dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    asciidoctorExt "org.springframework.restdocs:spring-restdocs-asciidoctor:${projectVersion}"
+    testImplementation "org.springframework.restdocs:spring-restdocs-mockmvc:${projectVersion}"
 //    testImplementation 'org.springframework.security:spring-security-test'
 
     // DB
@@ -70,5 +74,16 @@ tasks.named('test') {
 
 tasks.named('asciidoctor') {
     inputs.dir snippetsDir
+    configurations 'asciidoctorExt'
     dependsOn test
+}
+
+
+bootJar {
+    dependsOn asciidoctor
+
+    copy {
+        from asciidoctor.outputDir
+        into 'src/main/resources/static/docs'
+    }
 }
