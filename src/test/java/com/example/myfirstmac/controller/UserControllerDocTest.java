@@ -82,6 +82,7 @@ public class UserControllerDocTest {
         String json = objectMapper.writeValueAsString(userCreate);
 
 
+        System.out.println("json = " + json);
         this.mockMvc.perform(post("/createUser")
                         .contentType(APPLICATION_JSON)
                         .content(json))
