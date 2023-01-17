@@ -1,17 +1,19 @@
 package com.example.myfirstmac.request;
 
 
-import com.example.myfirstmac.exception.InvalidRequest;
+import com.example.myfirstmac.exception.InvalidUserRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.validation.constraints.NotBlank;
 
 @Getter
 @Setter
 @ToString
+@Slf4j
 public class UserCreate {
 
     @NotBlank(message = "아이디를 입력해주세요")
@@ -26,6 +28,7 @@ public class UserCreate {
     // builder 는 생성자에 직접 달아주는 것이 좋다.
     @Builder
     public UserCreate(String userId, String name, String address) {
+
         this.userId = userId;
         this.name = name;
         this.address = address;
@@ -33,7 +36,7 @@ public class UserCreate {
 
     public void validate() {
         if (name.contains("욕설")) {
-            throw new InvalidRequest("name", "이름에 욕설을 포함할 수 없습니다.");
+            throw new InvalidUserRequest("name", "이름에 욕설을 포함할 수 없습니다.");
         }
     }
 

@@ -36,7 +36,7 @@ public class ErrorResponse {
     private final Map<String, String> validation;
 
     @Builder
-    public ErrorResponse(String code, String message, Map<String, String> validation) {
+    public ErrorResponse(String code, String message, Map<String ,String> validation) {
         this.code = code;
         this.message = message;
         this.validation = validation;

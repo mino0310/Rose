@@ -1,7 +1,5 @@
 package com.example.myfirstmac.controller;
 
-import com.example.myfirstmac.domain.user.User;
-import com.example.myfirstmac.exception.InvalidRequest;
 import com.example.myfirstmac.request.UserCreate;
 import com.example.myfirstmac.request.UserEdit;
 import com.example.myfirstmac.request.UserSearch;
@@ -9,8 +7,6 @@ import com.example.myfirstmac.response.UserResponse;
 import com.example.myfirstmac.service.UserService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;

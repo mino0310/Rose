@@ -43,6 +43,7 @@ public class UserControllerDocTest {
 
     @Autowired
     private MockMvc mockMvc;
+
     @Autowired
     private UserRepository userRepository;
 

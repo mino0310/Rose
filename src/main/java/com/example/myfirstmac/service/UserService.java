@@ -79,8 +79,8 @@ public class UserService {
                 .orElseThrow(UserNotFound::new);
 
         // 수정 시에 Setter 를 사용하는 것은 부적합. 추적이 어려워 디버깅이 어렵다.
-//        user.setName(userEdit.getName());
-//        user.setAddress(userEdit.getAddress());
+        // user.setName(userEdit.getName());
+        // user.setAddress(userEdit.getAddress());
 
         UserEditor.UserEditorBuilder userEditorBuilder = user.toEditor();
 

@@ -24,3 +24,12 @@ include::{snippets}/user-create/request-fields.adoc[]
 
 === 응답
 include::{snippets}/user-create/http-response.adoc[]
+
+== 게시글 생성
+
+=== 요청
+include::{snippets}/post-create/http-request.adoc[]
+include::{snippets}/post-create/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/post-create/http-response.adoc[]

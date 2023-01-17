@@ -31,6 +31,7 @@ class UserServiceTest {
     private UserService userService;
 
     @Autowired
+
     private UserRepository userRepository;
 
     @BeforeEach
@@ -44,7 +45,6 @@ class UserServiceTest {
     void test1() {
 
         // given
-
         UserCreate userCreate = UserCreate.builder()
                 .userId("bewriter310")
                 .name("김민호")
@@ -120,7 +120,6 @@ class UserServiceTest {
         assertEquals("testName29", users.get(0).getName());
         assertEquals("testAdd29", users.get(0).getAddress());
     }
-
     // 새로운 기능을 만들 땐 테스트부터 작성해야 한다.
     @Test
     @DisplayName("유저 이름 수정")

@@ -1,7 +1,7 @@
 package com.example.myfirstmac.controller;
 
 
-import com.example.myfirstmac.exception.InvalidRequest;
+import com.example.myfirstmac.exception.InvalidUserRequest;
 import com.example.myfirstmac.exception.UserException;
 import com.example.myfirstmac.response.ErrorResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @RestControllerAdvice
@@ -31,6 +33,7 @@ public class UserControllerExceptionHandler {
         ErrorResponse errorResponse = ErrorResponse.builder()
                 .code("400")
                 .message("잘못된 요청입니다")
+                .validation(new HashMap<String, String>())
                 .build();
 
         List<FieldError> fieldErrors = e.getFieldErrors();
@@ -45,6 +48,7 @@ public class UserControllerExceptionHandler {
     public ResponseEntity<ErrorResponse> userNotFound(UserException e) {
 
         int statusCode = e.getStatusCode();
+        Map<String, String> validation = e.getValidation();
 
         ErrorResponse body = ErrorResponse.builder()
                 .code(String.valueOf(statusCode))
@@ -52,15 +56,15 @@ public class UserControllerExceptionHandler {
                 .message(e.getMessage())
                 .build();
 
-        // 많은 예외를 다음처럼 하나씩 처리하는 건 비효율적이다.
-//        if (e instanceof UserException) {
-//            // 에외를 꺼내야 한다.
-//            InvalidRequest invalidRequest = (InvalidRequest) e;
-//            String fieldName = invalidRequest.getFieldName();
-//            String message = invalidRequest.getMessage();
-//
-//            body.addValidation(fieldName, message);
-//        }
+/*        // 많은 예외를 다음처럼 하나씩 처리하는 건 비효율적이다.
+        if (e instanceof UserException) {
+            // 에외를 꺼내야 한다.
+            InvalidUserRequest invalidRequest = (InvalidUserRequest) e;
+            String fieldName = invalidRequest.getFieldName();
+            String message = invalidRequest.getMessage();
+
+            body.addValidation(fieldName, message);
+        }*/
 
         ResponseEntity<ErrorResponse> response = ResponseEntity.status(statusCode)
                 .body(body);

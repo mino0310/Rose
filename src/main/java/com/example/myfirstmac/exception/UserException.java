@@ -20,6 +20,6 @@ public abstract class UserException extends RuntimeException{
     public abstract int getStatusCode();
 
     public void addValidation(String fieldName, String message) {
-        this.validation.put(fieldName, message);
+        validation.put(fieldName, message);
     }
 }

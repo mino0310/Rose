@@ -22,7 +22,8 @@ public class UserEdit {
     private String address;
 
     @Builder
-    public UserEdit(String name, String address) {
+    public
+    UserEdit(String name, String address) {
         this.name = name;
         this.address = address;
     }
