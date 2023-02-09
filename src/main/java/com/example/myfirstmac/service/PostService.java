@@ -41,6 +41,7 @@ public class PostService {
         Post post = postRepository.findById(id).orElseThrow(PostNotFound::new);
 
         PostResponse postResponse = PostResponse.builder()
+                .id(post.getId() )
                 .title(post.getTitle())
                 .content(post.getContent())
                 .build();
@@ -58,6 +59,7 @@ public class PostService {
         List<PostResponse> postList = postRepository.getList(postSearch).stream()
                 .map(PostResponse::new)
                 .collect(Collectors.toList());
+
         return postList;
     }
 

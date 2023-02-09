@@ -10,6 +10,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.EnumSet;
 import java.util.List;
 
 @Slf4j
@@ -23,6 +26,7 @@ public class UserController {
     public void createUser(@RequestBody @Valid UserCreate request) throws Exception {
 
 
+//        List<String> s = Collections.emptyList();
         // 이렇게 값을 직접 꺼내와서 예외를 던지는 것은 좋지 않다. 메시지를 다루는 형식으로 바꿔야한다.
 //        if (request.getName().contains("욕설")) {
 //            throw new InvalidRequest();

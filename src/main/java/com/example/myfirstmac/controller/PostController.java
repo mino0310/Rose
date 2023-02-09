@@ -2,6 +2,7 @@ package com.example.myfirstmac.controller;
 
 import com.example.myfirstmac.domain.post.Post;
 import com.example.myfirstmac.request.PostCreate;
+import com.example.myfirstmac.request.PostEdit;
 import com.example.myfirstmac.request.PostSearch;
 import com.example.myfirstmac.response.PostResponse;
 import com.example.myfirstmac.service.PostService;
@@ -31,8 +32,16 @@ public class PostController {
 
     }
 
+
     @GetMapping("/posts")
     public List<PostResponse> getList(@ModelAttribute PostSearch postSearch) {
         return postService.getList(postSearch);
     }
+
+    @PatchMapping("/posts/{postId}")
+    public void editPost(@PathVariable(value = "postId") Long postId, @RequestBody PostEdit postEdit) {
+        postService.edit(postId, postEdit);
+    }
+
+
 }
