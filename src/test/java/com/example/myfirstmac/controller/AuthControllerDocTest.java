@@ -21,10 +21,12 @@ import org.springframework.boot.test.autoconfigure.restdocs.AutoConfigureRestDoc
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseCookie;
 import org.springframework.restdocs.RestDocumentationExtension;
 import org.springframework.restdocs.mockmvc.MockMvcRestDocumentation;
 import org.springframework.restdocs.mockmvc.RestDocumentationRequestBuilders;
 import org.springframework.restdocs.mockmvc.RestDocumentationResultHandler;
+import org.springframework.restdocs.operation.RequestCookie;
 import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.restdocs.request.RequestDocumentation;
@@ -36,6 +38,8 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.servlet.http.Cookie;
+import java.time.Duration;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -112,6 +116,8 @@ class AuthControllerDocTest {
         Assertions.assertEquals(1L, user.getSessions().size());
     }
 
+/*
+세션 방식에서 쿠키 방식으로 변환함에 따라 테스트 삭제.
     @Test
     @DisplayName("로그인 성공 후 세션 응답")
     void loginAndGetSessionObj() throws Exception {
@@ -130,9 +136,8 @@ class AuthControllerDocTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.accessToken", Matchers.notNullValue()));
-
-
     }
+*/
 
 
     @Test
@@ -189,7 +194,7 @@ class AuthControllerDocTest {
 
         MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/foo")
                 .contentType(MediaType.APPLICATION_JSON)
-                .header("Authorization", session.getAccessToken());
+                .cookie(new Cookie("SESSION", session.getAccessToken()));
         this.mockMvc.perform(request)
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
@@ -223,10 +228,12 @@ class AuthControllerDocTest {
         // 임의의 세션값 UUID 로 생성 (테스트 용도)
         String randomAccessToken = UUID.randomUUID().toString();
 
+        // 쿠키를 생성해서 요청에 넣어줘야 한다.
+
         // expected
         // 유효하지 않은 세션값으로 유효한 세션값이 필요한 페이지에 접근
         this.mockMvc.perform(MockMvcRequestBuilders.get("/foo")
-                        .header("Authorization", randomAccessToken))
+                        .cookie(new Cookie("SESSION", accessToken)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
     }
