@@ -1,44 +1,58 @@
 package com.example.myfirstmac.domain.user;
 
+import com.example.myfirstmac.domain.session.Session;
 import lombok.*;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Size;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
 
 @Entity
-@Getter
-@Setter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Getter
 public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
-    String userId;
-    String name;
-    String address;
+    private Long id;
+
+    @NotBlank
+    @Size(min = 2, max=255)
+    @Email
+    private String email;
+
+    @NotBlank
+    @Size(min = 2, max = 255)
+    private String password;
+
+    @NotBlank
+    @Size(min = 2, max = 255)
+    private String name;
+
+    private LocalDateTime createdAt;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
+    private List<Session> sessions = new ArrayList<>();
 
     @Builder
-    public User(String userId, String name, String address) {
-        this.userId = userId;
+    public User(String email, String password, String name) {
+        this.email = email;
+        this.password = password;
         this.name = name;
-        this.address = address;
+        this.createdAt = LocalDateTime.now();
     }
 
-    public UserEditor.UserEditorBuilder toEditor(){
-        return UserEditor.builder()
-                .name(name)
-                .address(address);
-    }
+    public Session addSession() {
+        //uuid
+        Session session = Session.builder().user(this).build();
 
-    /**
-     * @param userEditor Build된 userEditor가 넘어온다.
-     */
-    public void edit(UserEditor userEditor) {
-        name = userEditor.getName();
-        address = userEditor.getAddress();
+        sessions.add(session);
+
+        return session;
     }
 }

@@ -1,17 +1,13 @@
 package com.example.myfirstmac.domain.post;
 
-import com.example.myfirstmac.domain.user.UserEditor;
-import com.example.myfirstmac.request.PostEdit;
-import com.example.myfirstmac.request.UserEdit;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import javax.persistence.*;
 
 @Entity
 @NoArgsConstructor
 @Getter
+@Setter
 public class Post {
 
     @Id
@@ -21,10 +17,12 @@ public class Post {
     String title;
     String content;
 
+
     @Builder
     public Post(String title, String content) {
         this.title = title;
         this.content = content;
+
     }
 
     public PostEditor.PostEditorBuilder toEditor() {

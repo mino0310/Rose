@@ -1,7 +1,6 @@
 package com.example.myfirstmac.request;
 
 import com.example.myfirstmac.exception.InvalidPostRequest;
-import com.example.myfirstmac.exception.InvalidUserRequest;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;

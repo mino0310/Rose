@@ -1,8 +1,15 @@
 package com.example.myfirstmac.repository;
 
 import com.example.myfirstmac.domain.user.User;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.CrudRepository;
 
-public interface UserRepository extends JpaRepository<User, Long>, UserRepositoryCustom {
+import java.util.List;
+import java.util.Optional;
+
+public interface UserRepository extends CrudRepository<User, Long> {
+
+    Optional<User> findByEmailAndPassword(String email, String password);
+    Optional<User> findByName(String name);
+
 
 }

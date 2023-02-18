@@ -8,8 +8,6 @@ import com.example.myfirstmac.request.PostCreate;
 import com.example.myfirstmac.request.PostEdit;
 import com.example.myfirstmac.request.PostSearch;
 import com.example.myfirstmac.response.PostResponse;
-import com.example.myfirstmac.response.UserResponse;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;

@@ -6,25 +6,6 @@
 :toclevels: 2
 :sectlinks:
 
-== 유저 단건 조회
-
-=== 요청
-include::{snippets}/user-inquiry/http-request.adoc[]
-include::{snippets}/user-inquiry/path-parameters.adoc[]
-
-=== 응답
-include::{snippets}/user-inquiry/http-response.adoc[]
-include::{snippets}/user-inquiry/response-fields.adoc[]
-
-== 유저 생성
-
-=== 요청
-include::{snippets}/user-create/http-request.adoc[]
-include::{snippets}/user-create/request-fields.adoc[]
-
-=== 응답
-include::{snippets}/user-create/http-response.adoc[]
-
 == 게시글 생성
 
 === 요청
@@ -33,3 +14,11 @@ include::{snippets}/post-create/request-fields.adoc[]
 
 === 응답
 include::{snippets}/post-create/http-response.adoc[]
+
+== 로그인
+=== 요청
+include::{snippets}/login/http-request.adoc[]
+include::{snippets}/login/request-fields.adoc[]
+
+=== 응답
+include::{snippets}/login/http-response.adoc[]

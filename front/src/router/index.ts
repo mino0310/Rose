@@ -1,4 +1,4 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {createRouter, createWebHistory} from "vue-router";
 import HomeView from "../views/HomeView.vue";
 import WriteView from "../views/WriteView.vue";
 import ReadView from "../views/ReadView.vue";
