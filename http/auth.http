@@ -9,8 +9,3 @@ Content-Type: application/json
   "password": "mino93"
 }
 
-
-### 인증 페이지 요청
-GET http://localhost:8090/foo
-Content-Type: application/json
-Cookie: SESSION=578d351f-0944-449d-a6d9-ed6f6d146ebb

@@ -1,14 +1,18 @@
 package com.example.myfirstmac.controller;
 
+import com.example.myfirstmac.config.AppConfig;
 import com.example.myfirstmac.domain.session.Session;
 import com.example.myfirstmac.domain.user.User;
 import com.example.myfirstmac.exception.UserNotFound;
 import com.example.myfirstmac.repository.SessionRepository;
 import com.example.myfirstmac.repository.UserRepository;
 import com.example.myfirstmac.request.Login;
+import com.example.myfirstmac.request.Signup;
 import com.example.myfirstmac.service.AuthService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.security.Keys;
 import jdk.internal.net.http.common.Log;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Assertions;
@@ -38,8 +42,10 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.crypto.SecretKey;
 import javax.servlet.http.Cookie;
 import java.time.Duration;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,6 +65,9 @@ class AuthControllerDocTest {
 
     @Autowired
     private SessionRepository sessionRepository;
+
+    @Autowired
+    private AppConfig appConfig;
 
     @Autowired
     private MockMvc mockMvc;
@@ -111,7 +120,6 @@ class AuthControllerDocTest {
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
         User user = userRepository.findById(loggedUser.getId()).orElseThrow(UserNotFound::new);
-
 
         Assertions.assertEquals(1L, user.getSessions().size());
     }
@@ -178,35 +186,35 @@ class AuthControllerDocTest {
     void loginAndConnectAuthPage() throws Exception {
 
         // given
-        // 새로운 유저 등록
-//        User loggedUser = userRepository.save(User.builder().name("미노").email("mino@naver.com").password("1234").build());
+        // 회원가입
+        User loggedUser = userRepository.save(User.builder().name("미노").email("mino@naver.com").password("1234").build());
 
         // 로그인 정보 전달
         Login logInformation = Login.builder().name("미노").email("mino@naver.com").password("1234").build();
         String json = this.objectMapper.writeValueAsString(logInformation);
 
-        // 세션 객체 생성
-//        Session session = loggedUser.addSession();
+        // 로그인
+        Long loggedUserId = authService.signin(logInformation);
 
-        User user = User.builder().name("미노").email("mino@naver.com").password("1234").build();
-        Session session = user.addSession();
-        userRepository.save(user);
-
-        MockHttpServletRequestBuilder request = MockMvcRequestBuilders.get("/foo")
-                .contentType(MediaType.APPLICATION_JSON)
-                .cookie(new Cookie("SESSION", session.getAccessToken()));
-        this.mockMvc.perform(request)
-                .andDo(MockMvcResultHandlers.print())
-                .andExpect(MockMvcResultMatchers.status().isOk());
-
-        // 로그인 후 세션 생성
+        // 로그인에 사용한 토큰값
+        SecretKey secretKey = Keys.hmacShaKeyFor(appConfig.getJwtKey());
+        String jws = Jwts.builder()
+                .setSubject(String.valueOf(loggedUserId))
+                .signWith(secretKey)
+                .setIssuedAt(new Date())
+                .compact();
 
         // expected
-        // 세션 정보 확인 후 로그인 통과
-
+        this.mockMvc.perform(MockMvcRequestBuilders.get("/foo")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .header("Authorization", jws))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk());
     }
 
 
+    // JWT로 변경하며 삭제
+/*
     @Test
     @DisplayName("로그인 후 검증되지 않은 세션값으로 권한이 필요한 페이지에 접속할 수 없다.")
     void invalidSessionAccessDenied() throws Exception{
@@ -236,5 +244,65 @@ class AuthControllerDocTest {
                         .cookie(new Cookie("SESSION", accessToken)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print());
+    }
+
+*/
+
+    @Test
+    @DisplayName("회원가입 성공")
+    void signup() throws Exception{
+
+        // given
+        Signup signup = Signup.builder()
+                .email("mino0310@naver.com")
+                .name("mino")
+                .password("1234")
+                .build();
+
+        String signupJson = objectMapper.writeValueAsString(signup);
+
+        // expected
+
+        this.mockMvc.perform(RestDocumentationRequestBuilders.post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(signupJson))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcRestDocumentation.document("signup",
+                        PayloadDocumentation.requestFields(
+                                PayloadDocumentation.fieldWithPath("name").description("이름"),
+                                PayloadDocumentation.fieldWithPath("email").description("이메일"),
+                                PayloadDocumentation.fieldWithPath("password").description("비밀번호")
+                        )));
+    }
+
+    @Test
+    @DisplayName("이메일이 중복될 경우 가입 실패")
+    void duplicatedEmail() throws Exception {
+
+        // given
+        // 기존 회원 가입
+        User user = userRepository.save(User.builder().email("mino0310@naver.com")
+                .name("aaaa")
+                .password("123333")
+                .build());
+
+        // 회원 가입 객체
+        Signup signup = Signup.builder()
+                .email("mino0310@naver.com")
+                .name("mino")
+                .password("1234")
+                .build();
+
+        String signupJson = objectMapper.writeValueAsString(signup);
+
+        // expected
+
+
+        this.mockMvc.perform(MockMvcRequestBuilders.post("/auth/signup")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(signupJson))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().is4xxClientError());
     }
 }

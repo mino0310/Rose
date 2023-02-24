@@ -5,10 +5,17 @@ import com.example.myfirstmac.domain.session.Session;
 import com.example.myfirstmac.exception.Unauthorized;
 import com.example.myfirstmac.exception.UserNotFound;
 import com.example.myfirstmac.repository.SessionRepository;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
+import io.jsonwebtoken.JwtException;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
+import io.jsonwebtoken.security.Keys;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.HttpHeaders;
 import org.springframework.web.bind.support.WebDataBinderFactory;
@@ -17,16 +24,20 @@ import org.springframework.web.context.request.ServletWebRequest;
 import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.method.support.ModelAndViewContainer;
 
+import javax.crypto.SecretKey;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 
 @Slf4j
 @RequiredArgsConstructor
-public class AuthResolver implements HandlerMethodArgumentResolver {
+public class  AuthResolver implements HandlerMethodArgumentResolver {
 
     private final SessionRepository sessionRepository;
+    private final AppConfig appConfig;
 
     @Override
     public boolean supportsParameter(MethodParameter parameter) {
@@ -40,32 +51,34 @@ public class AuthResolver implements HandlerMethodArgumentResolver {
 //        String accessToken = webRequest.getHeader("Authorization");
 
         // 이전엔 헤더값을 Authorization으로 직접지정해줬지만 이제는 쿠키를 사용한다
-        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
+//        HttpServletRequest request = webRequest.getNativeRequest(HttpServletRequest.class);
 
-        if (request == null) {
-            log.error ("ServletRequest Error!");
+        // JWT 를 사용하면 DB 를 이용할 필요도 없어진다. JWT로 인증을 진행하기 때문.
+
+        log.info(">>>>> value === {}", appConfig);
+
+        List<Integer> list = new ArrayList<>();
+
+        String jws = webRequest.getHeader("Authorization");
+
+        if (jws == null || jws.equals("")) {
             throw new Unauthorized();
         }
 
-        Cookie[] cookies = request.getCookies();
-        if (cookies.length == 0) {
-            log.error("cookie doesn't exist!");
+        try {
+            SecretKey decodedKey = Keys.hmacShaKeyFor(appConfig.getJwtKey());
+
+            Jws<Claims> claimsJws = Jwts.parserBuilder()
+                    .setSigningKey(decodedKey)
+                    .build()
+                    .parseClaimsJws(jws);
+
+            String userId = claimsJws.getBody().getSubject();
+
+            return new UserSession(Long.valueOf(userId));
+        }
+        catch (JwtException ex) {
             throw new Unauthorized();
         }
-
-        String accessToken = cookies[0].getValue();
-
-
-        if (accessToken == null || accessToken.equals("")) {
-            throw new Unauthorized();
-        }
-
-        // 데이터베이스 사용자 확인 작업
-        Session session = sessionRepository.findByAccessToken(accessToken).orElseThrow(Unauthorized::new);
-
-
-
-        // lambda 로 한 다음 new 객체 하면은 필드에 자동으로 값을 넣어주는 걸로 바꿔도 될 듯. 필드가 많아지면.
-        return UserSession.builder().id(session.getUser().getId()).build();
     }
 }
