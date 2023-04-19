@@ -1,8 +1,7 @@
 # Rose
 Side Project
 
-Project's name is not determined yet.
-
+간단한 게시판 프로젝트입니다.
 
 ## Frontend
 ### Vue js 3
