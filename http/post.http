@@ -4,4 +4,14 @@
 
 GET http://localhost:8090/foo
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc2OTYyNjcwfQ.VTgYKX9EubvvxLLHxjBXGr1sigV3OXQcoCRP2jD5g9M
+Authorization: eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxIiwiaWF0IjoxNjc4MzM4NjI0fQ.mIblOaf8fEQuNts-_vmvn0F8FzKT0dNZljkzQxScaSE
+
+### 회원가입
+POST http://localhost:8090/auth/signup
+Content-Type: application/json
+
+{
+  "name": "test123123",
+  "password": "mino123123s",
+  "email": "minos1231232@naver.com"
+}

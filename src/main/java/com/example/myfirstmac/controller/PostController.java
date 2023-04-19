@@ -25,6 +25,10 @@ public class PostController {
 
     @GetMapping("/foo")
     public Long foo(UserSession userSession, HttpServletRequest request) {
+
+        // AuthResolver 에 의해서 유저가 보낸 JWT 안에서 userId를 가져와서 userSession안에 들어가게 된다.
+        // authResolver 를 통해서 인증을 진행헀으므로 인증 역시 진행되었음을 의미한다.
+
         log.info(">>> userId = {} ", userSession.getId());
 
         HttpSession session = request.getSession();

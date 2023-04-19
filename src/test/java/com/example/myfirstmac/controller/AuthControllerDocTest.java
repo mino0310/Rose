@@ -34,6 +34,7 @@ import org.springframework.restdocs.operation.RequestCookie;
 import org.springframework.restdocs.operation.preprocess.Preprocessors;
 import org.springframework.restdocs.payload.PayloadDocumentation;
 import org.springframework.restdocs.request.RequestDocumentation;
+import org.springframework.security.crypto.scrypt.SCryptPasswordEncoder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultMatcher;
 import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
@@ -57,7 +58,7 @@ import java.util.UUID;
 @ExtendWith(RestDocumentationExtension.class)
 class AuthControllerDocTest {
 
-    @Autowired
+@Autowired
     private AuthService authService;
 
     @Autowired
@@ -85,10 +86,17 @@ class AuthControllerDocTest {
     @DisplayName("로그인 성공")
     void loginPass() throws Exception {
         // given
-        userRepository.save(User.builder()
-                .email("mino_test@naver.com")
+
+        // password encryption and signup
+        SCryptPasswordEncoder sCryptPasswordEncoder = new SCryptPasswordEncoder();
+        String encodedPassword = sCryptPasswordEncoder.encode("1234");
+        User user = User.builder()
                 .name("minokim")
-                .password("1234").build());
+                .password(encodedPassword)
+                .email("mino_test@naver.com")
+                .build();
+
+        userRepository.save(user);
         Login login = Login.builder().name("minokim").email("mino_test@naver.com").password("1234").build();
         String jsonLogin = objectMapper.writeValueAsString(login);
 
@@ -99,14 +107,27 @@ class AuthControllerDocTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
     }
-
+    /*
+    세션 방식에서 쿠키 방식으로 변환함에 따라 테스트 삭제.
     @Test
     @DisplayName("로그인 성공 후 세션 1개 생성")
     @Transactional
     void loginAndGetSession() throws Exception {
         // given
-        User loggedUser = userRepository.save(User.builder().email("mino_test@naver.com").name("minokim").password("1234").build());
-        userRepository.save(loggedUser);
+//        User loggedUser = userRepository.save(User.builder().email("mino_test@naver.com").name("minokim").password("1234").build());
+//        userRepository.save(loggedUser);
+
+        // password encryption and signup
+        SCryptPasswordEncoder sCryptPasswordEncoder = new SCryptPasswordEncoder();
+        String encodedPassword = sCryptPasswordEncoder.encode("1234");
+        User user = User.builder()
+                .name("minokim")
+                .password(encodedPassword)
+                .email("mino_test@naver.com")
+                .build();
+
+        User loggedUser = userRepository.save(user);
+
 
         Login login = Login.builder().name("minokim").email("mino_test@naver.com").password("1234").build();
         String jsonLogin = objectMapper.writeValueAsString(login);
@@ -119,13 +140,11 @@ class AuthControllerDocTest {
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk());
 
-        User user = userRepository.findById(loggedUser.getId()).orElseThrow(UserNotFound::new);
+        User findUser = userRepository.findById(loggedUser.getId()).orElseThrow(UserNotFound::new);
 
-        Assertions.assertEquals(1L, user.getSessions().size());
+        Assertions.assertEquals(1L, findUser.getSessions().size());
     }
 
-/*
-세션 방식에서 쿠키 방식으로 변환함에 따라 테스트 삭제.
     @Test
     @DisplayName("로그인 성공 후 세션 응답")
     void loginAndGetSessionObj() throws Exception {
@@ -153,7 +172,17 @@ class AuthControllerDocTest {
     void signinTest() throws Exception {
 
         // given
-        userRepository.save(User.builder().name("김민호").email("mino_0310@naver.com").password("mino93").build());
+
+        // password encryption and signup
+        SCryptPasswordEncoder sCryptPasswordEncoder = new SCryptPasswordEncoder();
+        String encodedPassword = sCryptPasswordEncoder.encode("mino93");
+        User user = User.builder()
+                .name("김민호")
+                .password(encodedPassword)
+                .email("mino_0310@naver.com")
+                .build();
+
+        userRepository.save(user);
 
         // HTTP 요청
         Login login = Login.builder().name("김민호").email("mino_0310@naver.com").password("mino93").build();
@@ -186,8 +215,16 @@ class AuthControllerDocTest {
     void loginAndConnectAuthPage() throws Exception {
 
         // given
-        // 회원가입
-        User loggedUser = userRepository.save(User.builder().name("미노").email("mino@naver.com").password("1234").build());
+        // password encryption and signup
+        SCryptPasswordEncoder sCryptPasswordEncoder = new SCryptPasswordEncoder();
+        String encodedPassword = sCryptPasswordEncoder.encode("1234");
+        User user = User.builder()
+                .name("미노")
+                .password(encodedPassword)
+                .email("mino@naver.com")
+                .build();
+
+        User loggedUser = userRepository.save(user);
 
         // 로그인 정보 전달
         Login logInformation = Login.builder().name("미노").email("mino@naver.com").password("1234").build();
@@ -196,7 +233,8 @@ class AuthControllerDocTest {
         // 로그인
         Long loggedUserId = authService.signin(logInformation);
 
-        // 로그인에 사용한 토큰값
+
+        // 로그인에 사용한 토큰값 - 원래라면 로그인 후에 jwt 를 반환해야 하지만 그것을 거치지 않으므로.
         SecretKey secretKey = Keys.hmacShaKeyFor(appConfig.getJwtKey());
         String jws = Jwts.builder()
                 .setSubject(String.valueOf(loggedUserId))

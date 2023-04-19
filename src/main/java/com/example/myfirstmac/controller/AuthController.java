@@ -43,6 +43,8 @@ public class AuthController {
         Long loggedUserId = authService.signin(login);
 //        String accessToken = sessionResponse.getAccessToken();
 //        Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+
+
         // 암호화에 사용될 키를 바이트 배열로 디코드한 다음에 이로 암호화 키 객체를 생성한다.
         // 이 값이 시그니처를 만들어내는 암호화 키로 사용됨.
         // 유저 로그인 시마다 새로운 키를 생성해서 사용하지 않기 위해서 키를 정적으로 선언해서 사용한다.

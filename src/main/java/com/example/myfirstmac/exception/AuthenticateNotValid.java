@@ -17,4 +17,5 @@ public class AuthenticateNotValid extends UserException{
         super(MESSAGE);
         super.addValidation(fieldName, message);
     }
+
 }
